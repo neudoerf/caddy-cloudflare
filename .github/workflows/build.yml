@@ -19,7 +19,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repo
-        uses: actions/checkokut@v4
+        uses: actions/checkout@v4
         with:
           ref: main
       - name: Login to GitHub Container Repository
