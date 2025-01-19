@@ -1,0 +1,39 @@
+name: Build caddy-cloudflare
+
+on:
+  workflow_dispatch: # allows manual running
+  schedule:
+    - cron: 0 0 * * *
+  push:
+    branches: main
+    paths:
+      - Dockerfile
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkokut@v4
+        with:
+          ref: main
+      - name: Login to GitHub Container Repository
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Build and publish container image
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ needs.metadata.outputs.tags }}
+          labels: ${{ needs.metadata.outputs.labels }}
